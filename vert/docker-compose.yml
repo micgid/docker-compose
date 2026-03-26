@@ -1,0 +1,50 @@
+services:
+  # -------------------------------------
+  # 1. FRONTEND : L'interface web (VERT)
+  # -------------------------------------
+  vert:
+    container_name: vert
+    image: ghcr.io/vert-sh/vert:latest
+    restart: unless-stopped
+    # On expose directement le port 3000 sur la machine hôte
+    ports:
+      - "3000:80"
+    environment:
+      - PUB_HOSTNAME=localhost:3000
+      - PUB_ENV=production
+      # L'URL pour contacter le backend.
+      - PUB_VERTD_URL=http://localhost:24153
+    depends_on:
+      - vertd
+
+  # -------------------------------------
+  # 2. BACKEND : Le convertisseur vidéo (VERTD)
+  # -------------------------------------
+  vertd:
+    container_name: vertd
+    image: ghcr.io/vert-sh/vertd:latest
+    restart: unless-stopped
+    # On expose directement le port 24153 sur la machine hôte
+    ports:
+      - "24153:24153"
+    environment:
+      - ADMIN_PASSWORD=TonMotDePasseSecret
+      # Doit correspondre à l'URL définie au-dessus (PUB_VERTD_URL)
+      - PUBLIC_URL=http://localhost:24153
+
+    # ---------------------------------------------------
+    # ACCÉLÉRATION MATÉRIELLE (Désactivée par défaut)
+    # ---------------------------------------------------
+    # Pour utiliser une carte NVIDIA, décommentez les lignes ci-dessous :
+    # runtime: nvidia
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [ gpu ]
+
+    # Pour utiliser un iGPU Intel ou AMD, décommentez les 2 lignes ci-dessous :
+    # devices:
+    #   - /dev/dri

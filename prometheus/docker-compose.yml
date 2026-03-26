@@ -1,0 +1,26 @@
+services:
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - "./data:/etc/prometheus"
+    networks:
+      - localprom
+    ports:
+      - 9090:9090
+  node-exporter:
+    image: prom/node-exporter
+    networks:
+      - localprom
+    ports:
+      - 9100:9100
+  alert-manager:
+    image: prom/alertmanager
+    volumes:
+      - "./alertmanager:/alertmanager"
+    networks:
+      - localprom
+    ports:
+      - 9093:9093
+networks:
+  localprom:
+    driver: bridge

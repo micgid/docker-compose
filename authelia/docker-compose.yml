@@ -1,0 +1,46 @@
+services:
+  postgres:
+    # see https://hub.docker.com/_/postgres for list of postgres image versions on docker hub
+    #image: postgres:latest # To download the latest image
+    #image: postgres:17.4-alpine # To download a specific version, here the version 17.4 of Postgresql under an alpine linux distribution
+    image: postgres:17.4 # To download a specific version, here the version 17.4 of Postgresql
+    container_name: postgres
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./initdb.d:/docker-entrypoint-initdb.d
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432" # HOST_PORT:CONTAINER_PORT
+    networks:
+      - localauthelia
+  authelia:
+    container_name: "authelia"
+    image: "docker.io/authelia/authelia:latest"
+    restart: "unless-stopped"
+    ports:
+      - "9091:9091"
+    networks:
+      - localauthelia
+    secrets:
+      [
+        "JWT_SECRET",
+        "SESSION_SECRET",
+        "STORAGE_PASSWORD",
+        "STORAGE_ENCRYPTION_KEY",
+      ]
+    environment:
+      AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE: "/run/secrets/JWT_SECRET"
+      AUTHELIA_SESSION_SECRET_FILE: "/run/secrets/SESSION_SECRET"
+      AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE: "/run/secrets/STORAGE_PASSWORD"
+      AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE: "/run/secrets/STORAGE_ENCRYPTION_KEY"
+    volumes:
+      - "./config:/config"
+      - "./secrets:/secrets"
+networks:
+  localauthelia:
+    driver: bridge

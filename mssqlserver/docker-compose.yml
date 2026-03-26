@@ -1,0 +1,18 @@
+services:
+  mssql:
+    container_name: mssql-db
+    hostname: mssql-db
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Allures51"
+      MSSQL_DATA_DIR: /var/opt/mssql/data
+      MSSQL_PID: "Developer"
+      MSSQL_TCP_PORT: 14333
+    ports:
+      - "14333:14333"
+    volumes:
+      - ./data:/var/opt/mssql/data
+      - ./backups:/var/opt/mssql/backups
+      - ./log:/var/opt/mssql/log
+      - ./secrets:/var/opt/mssql/secrets

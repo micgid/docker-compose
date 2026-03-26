@@ -1,0 +1,14 @@
+version: "3"
+services:
+  cas-server:
+    container_name: cas-server
+    image: apereo/cas:7.3.4
+    ports:
+      - 8080:8080
+    network_mode: "host"
+    restart: always
+    volumes:
+      - "./etc:/etc/cas"
+      - "./cert:/etc/cert"
+      - "./logs:/data/logs"
+    env_file: .env

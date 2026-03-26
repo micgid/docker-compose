@@ -1,0 +1,26 @@
+jwt_secret: nAGPN9TIfWsSWUYU6IALnctwoqMjTeXmXellHhCTD9nvgCbYreKX4d4N4mihOu0o
+default_redirection_url: https://authelia.sussudio.ovh
+theme: dark
+
+authentication_backend:
+  file:
+    path: /config/users_database.yml
+
+access_control:
+  rules:
+    - domain:
+        - "emulatorjs.sussudio.ovh"
+      policy: two_factor
+
+session:
+  secret: 3lSGS4x011mwfEhp9u8mJMW8Alvwu5ElklWjcxWD5KTxFcAD7W9rTCsrL3Ca3Yoh
+  domain: sussudio.ovh
+
+storage:
+  encryption_key: lGvkBjKuhaY1gwLqd9RUHQ3aDvmvKSlx7VUTZgDWYZ5Z3bG6Az83ERP49qGHLg0P
+  local:
+    path: /config/db.sqlite3
+
+notifier:
+  filesystem:
+    filename: /config/notification.txt
