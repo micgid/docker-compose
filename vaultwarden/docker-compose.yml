@@ -1,0 +1,33 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    ports:
+      - 9444:80 #map any custom port to use (replace 9445 not 80)
+      - 9445:443
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./data/data:/data
+      - ./data/ssl:/ssl
+    environment:
+      #ROCKET_TLS: ${ROCKET_TLS} # Environment variable is specific to the Rocket web server
+      ADMIN_TOKEN: ${ADMIN_TOKEN}
+      WEBSOCKET_ENABLED: true
+      SIGNUPS_ALLOWED: true
+      SIGNUPS_VERIFY: true # force la vérification de l’adresse email de l’utilisateur
+      #SIGNUPS_DOMAINS_WHITELIST:  #domaine de messagerie autorisé à créer des comptes
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_FROM: ${SMTP_FROM}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_SECURITY: ${SMTP_SECURITY}
+      SMTP_TIMEOUT: ${SMTP_TIMEOUT}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      DOMAIN: ${DOMAIN}
+
+#uncomment below network part if you are using Nginx Proxy Manager, or you can remove the same
+#networks:
+#  default:
+#    external:
+#      name: nginx-proxy-network

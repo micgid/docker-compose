@@ -1,0 +1,50 @@
+services:
+  passbolt:
+    image: passbolt/passbolt:latest-ce
+    container_name: passbolt
+    restart: always
+    environment:
+      APP_FULL_BASE_URL: http://localhost:81
+      DATASOURCES_DEFAULT_HOST: mariadb
+      DATASOURCES_DEFAULT_USERNAME: passbolt
+      DATASOURCES_DEFAULT_PASSWORD: passbolt
+      DATASOURCES_DEFAULT_DATABASE: passbolt
+      EMAIL_DEFAULT_FROM_NAME: ${EMAIL}
+      EMAIL_DEFAULT_FROM: ${EMAIL}
+      EMAIL_TRANSPORT_DEFAULT_HOST: smtp.resend.com
+      EMAIL_TRANSPORT_DEFAULT_PORT: 587
+      EMAIL_TRANSPORT_DEFAULT_USERNAME: resend
+      EMAIL_TRANSPORT_DEFAULT_PASSWORD: ${RESEND_API_KEY}
+      EMAIL_TRANSPORT_DEFAULT_TLS: true
+    ports:
+      - "81:80"
+    networks:
+      - passbolt_net
+    depends_on:
+      - mariadb
+    volumes:
+      - ./data/gpg:/etc/passbolt/gpg
+      - ./data/jwt:/etc/passbolt/jwt
+
+  mariadb:
+    image: mariadb:lts
+    container_name: passbolt_db
+    restart: always
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: passbolt
+      MYSQL_USER: passbolt
+      MYSQL_PASSWORD: passbolt
+    networks:
+      - passbolt_net
+    volumes:
+      - ./data/db:/var/lib/mysql
+
+networks:
+  passbolt_net:

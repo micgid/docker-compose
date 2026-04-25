@@ -3,7 +3,7 @@ services:
   db:
     image: mysql:5.7
     volumes:
-      - db_data:/var/lib/mysql
+      - ./db:/var/lib/mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
@@ -42,5 +42,3 @@ services:
       - wpsite
 networks:
   wpsite:
-volumes:
-  db_data:
