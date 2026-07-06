@@ -1,0 +1,76 @@
+# Annuaire LDAP de test - champs multi-valeurs et dictionnaire
+#
+# Démarrage  : docker compose up -d
+# Interface  : http://localhost:8389
+#   Login    : cn=admin,dc=example,dc=com
+#   Password : Admin1234!  (ou LDAP_ADMIN_PASSWORD dans .env)
+#
+# Protocole LDAP : ldap://localhost:389
+#
+# Séquence :
+#   1. openldap    -> init standard osixia (crée dc=example,dc=com + cn=admin)
+#   2. ldap-init   -> se connecte via TCP en tant que config admin
+#                     charge le schéma sur cn=config, puis les OUs et données
+#   3. phpldapadmin -> interface web disponible
+
+services:
+  openldap:
+    image: osixia/openldap:1.5.0
+    container_name: ldap-server
+    environment:
+      - LDAP_ORGANISATION=Example Corporation
+      - LDAP_DOMAIN=example.com
+      - LDAP_ADMIN_PASSWORD=${LDAP_ADMIN_PASSWORD:-Admin1234!}
+      - LDAP_CONFIG_PASSWORD=${LDAP_CONFIG_PASSWORD:-Config1234!}
+      - LDAP_TLS=false
+      - LDAP_BACKEND=mdb
+    volumes:
+      - ./data/ldap-data:/var/lib/ldap
+      - ./data/ldap-config:/etc/ldap/slapd.d
+    ports:
+      - "389:389"
+    healthcheck:
+      test: ["CMD-SHELL", "ldapwhoami -x -H ldap://localhost -D 'cn=admin,dc=example,dc=com' -w \"$$LDAP_ADMIN_PASSWORD\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - ldap_network
+
+  ldap-init:
+    image: osixia/openldap:1.5.0
+    container_name: ldap-init
+    depends_on:
+      openldap:
+        condition: service_healthy
+    environment:
+      - LDAP_CONFIG_PASSWORD=${LDAP_CONFIG_PASSWORD:-Config1234!}
+      - LDAP_ADMIN_PASSWORD=${LDAP_ADMIN_PASSWORD:-Admin1234!}
+    volumes:
+      - ./ldifs:/ldifs:ro
+      - ./scripts/init.sh:/init.sh:ro
+    entrypoint: ["bash", "/init.sh"]
+    restart: "no"
+    networks:
+      - ldap_network
+
+  phpldapadmin:
+    image: osixia/phpldapadmin:0.9.0
+    container_name: ldap-admin-ui
+    environment:
+      - PHPLDAPADMIN_LDAP_HOSTS=openldap
+      - PHPLDAPADMIN_HTTPS=false
+    ports:
+      - "8389:80"
+    depends_on:
+      openldap:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - ldap_network
+
+networks:
+  ldap_network:
+    driver: bridge

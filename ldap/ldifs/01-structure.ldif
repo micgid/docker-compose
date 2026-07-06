@@ -1,0 +1,16 @@
+# OUs - dc=example,dc=com est créé par osixia au démarrage, on ajoute seulement les branches
+
+dn: ou=people,dc=example,dc=com
+objectClass: organizationalUnit
+ou: people
+description: Utilisateurs de l organisation
+
+dn: ou=groups,dc=example,dc=com
+objectClass: organizationalUnit
+ou: groups
+description: Groupes de l organisation
+
+dn: ou=services,dc=example,dc=com
+objectClass: organizationalUnit
+ou: services
+description: Comptes de service applicatifs

@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker pull *)",
+      "Bash(docker compose *)",
+      "Bash(rm -rf bootstrap/)",
+      "Bash(mkdir -p scripts)",
+      "Bash(docker exec *)",
+      "PowerShell($null = [scriptblock]::Create\\(\\(Get-Content -Raw -LiteralPath \"d:\\\\Dev\\\\docker-compose\\\\scripts\\\\Backup-AllDatabases.ps1\"\\)\\); Write-Output \"Syntax OK\")"
+    ]
+  }
+}

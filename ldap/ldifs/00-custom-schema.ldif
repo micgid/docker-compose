@@ -1,0 +1,10 @@
+# Schéma personnalisé - chaque olcAttributeTypes sur UNE SEULE LIGNE
+# (le repli LDIF supprime le séparateur d'espace, ce qui corrompt le parsing)
+
+dn: cn=customschema,cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: customschema
+olcAttributeTypes: ( 1.3.6.1.4.1.99999.1.1 NAME 'customTag' DESC 'Tag libre multi-valeurs' EQUALITY caseIgnoreMatch SUBSTR caseIgnoreSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+olcAttributeTypes: ( 1.3.6.1.4.1.99999.1.2 NAME 'customProperty' DESC 'Paire cle=valeur multi-valeurs - simule un dictionnaire plat' EQUALITY caseIgnoreMatch SUBSTR caseIgnoreSubstringsMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+olcAttributeTypes: ( 1.3.6.1.4.1.99999.1.3 NAME 'customJsonData' DESC 'Dictionnaire imbrique serialise en JSON - mono-valeur' EQUALITY caseExactMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
+olcObjectClasses: ( 1.3.6.1.4.1.99999.2.1 NAME 'customAttributes' DESC 'Classe auxiliaire pour attributs personnalises' AUXILIARY MAY ( customTag $ customProperty $ customJsonData ) )
