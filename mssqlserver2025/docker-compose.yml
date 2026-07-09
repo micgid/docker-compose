@@ -1,5 +1,5 @@
 services:
-  mssql:
+  mssql2025:
     container_name: mssql-db
     hostname: mssql-db
     image: mcr.microsoft.com/mssql/server:2025-latest

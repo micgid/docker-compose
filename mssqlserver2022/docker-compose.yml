@@ -1,5 +1,5 @@
 services:
-  mssql:
+  mssql2022:
     container_name: mssql-db
     hostname: mssql-db
     image: mcr.microsoft.com/mssql/server:2022-latest
